@@ -11,7 +11,7 @@ from pygame.locals import Rect, DOUBLEBUF, QUIT, K_ESCAPE, KEYDOWN, K_DOWN, \
 X_MAX = 800
 Y_MAX = 600
 
-LEFT, RIGHT, UP, DOWN = 0, 1, 3, 4
+LEFT, RIGHT, UP, DOWN = 0, 1, 2, 3
 START, STOP = 0, 1
 
 everything = pygame.sprite.Group()
@@ -274,8 +274,8 @@ def main():
         pygame.mixer.music.load("DST-AngryMod.mp3")
         pygame.mixer.music.set_volume(0.8)
         pygame.mixer.music.play(-1)
-
-    while True:
+    record=[False,False,False,False]    #record key's queue.When first key down,the second key down and up,let fighter return previous state
+    while True: 
         clock.tick(30)
         # Check for input
         for event in pygame.event.get():
@@ -286,12 +286,16 @@ def main():
                 if event.type == KEYDOWN:
                     if event.key == K_DOWN:
                         ship.steer(DOWN, START)
+                        record[DOWN]=True
                     if event.key == K_LEFT:
                         ship.steer(LEFT, START)
+                        record[LEFT]=True
                     if event.key == K_RIGHT:
                         ship.steer(RIGHT, START)
+                        record[RIGHT]=True
                     if event.key == K_UP:
                         ship.steer(UP, START)
+                        record[UP]=True
                     if event.key == K_LCTRL:
                         ship.shoot(START)
                     if event.key == K_RETURN:
@@ -303,12 +307,24 @@ def main():
                 if event.type == KEYUP:
                     if event.key == K_DOWN:
                         ship.steer(DOWN, STOP)
+                        record[DOWN]=False
+                        if record[UP]==True:
+                            ship.steer(UP,START)
                     if event.key == K_LEFT:
                         ship.steer(LEFT, STOP)
+                        record[LEFT]=False
+                        if record[RIGHT]==True:
+                            ship.steer(RIGHT,START)
                     if event.key == K_RIGHT:
                         ship.steer(RIGHT, STOP)
+                        record[RIGHT]=False
+                        if record[LEFT]==True:
+                            ship.steer(LEFT,START)
                     if event.key == K_UP:
                         ship.steer(UP, STOP)
+                        record[UP]=False
+                        if record[DOWN]==True:
+                            ship.steer(DOWN,START)
                     if event.key == K_LCTRL:
                         ship.shoot(STOP)
 
